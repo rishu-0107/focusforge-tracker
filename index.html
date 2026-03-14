@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusForge | Premium Exam Architect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #030712;
+            --card-glass: rgba(17, 24, 39, 0.7);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --accent-primary: #6366f1;
+            --accent-secondary: #a855f7;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.1) 0px, transparent 50%);
+            color: #f8fafc;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .glass {
+            background: var(--card-glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-glass);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-premium {
+            background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-premium:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+        }
+
+        /* Pomodoro Ring */
+        .timer-ring {
+            transition: stroke-dashoffset 1s linear;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        /* Navigation Links */
+        .nav-link.active {
+            background: rgba(99, 102, 241, 0.1);
+            color: #818cf8;
+            border-right: 2px solid #6366f1;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- AUTH SECTION -->
+    <div id="auth-container" class="fixed inset-0 z-[100] bg-slate-950 flex items-center justify-center p-4">
+        <div class="glass w-full max-w-md p-8 rounded-[2.5rem] shadow-2xl border border-white/10">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-500/30">
+                    <i data-lucide="zap" class="text-white w-8 h-8 fill-current"></i>
+                </div>
+                <h1 class="text-3xl font-extrabold tracking-tight">FocusForge</h1>
+                <p class="text-slate-400 mt-2">Premium Exam Architect</p>
+            </div>
+
+            <!-- Login Form -->
+            <div id="login-form" class="space-y-4">
+                <input type="email" id="l-email" placeholder="Email" class="w-full bg-slate-900/50 border border-slate-800 rounded-2xl px-5 py-4 focus:outline-none focus:border-indigo-500 transition-all">
+                <input type="password" id="l-password" placeholder="Password" class="w-full bg-slate-900/50 border border-slate-800 rounded-2xl px-5 py-4 focus:outline-none focus:border-indigo-500 transition-all">
+                <button onclick="handleLogin()" class="w-full btn-premium py-4 rounded-2xl font-bold text-lg">Enter Forge</button>
+                <p class="text-center text-sm text-slate-500">New here? <button onclick="toggleAuth(true)" class="text-indigo-400 font-bold">Create an account</button></p>
+            </div>
+
+            <!-- Register Form -->
+            <div id="register-form" class="hidden space-y-4">
+                <input type="text" id="r-name" placeholder="Full Name" class="w-full bg-slate-900/50 border border-slate-800 rounded-2xl px-5 py-4 focus:outline-none transition-all">
+                <input type="email" id="r-email" placeholder="Email" class="w-full bg-slate-900/50 border border-slate-800 rounded-2xl px-5 py-4 focus:outline-none transition-all">
+                <input type="password" id="r-password" placeholder="Password" class="w-full bg-slate-900/50 border border-slate-800 rounded-2xl px-5 py-4 focus:outline-none transition-all">
+                <button onclick="handleRegister()" class="w-full btn-premium py-4 rounded-2xl font-bold text-lg">Join the Forge</button>
+                <p class="text-center text-sm text-slate-500">Have an account? <button onclick="toggleAuth(false)" class="text-indigo-400 font-bold">Login</button></p>
+            </div>
+            <p id="auth-error" class="text-red-400 text-center text-sm mt-4 hidden"></p>
+        </div>
+    </div>
+
+    <!-- MAIN APP WRAPPER -->
+    <div id="app-container" class="hidden flex flex-col md:flex-row min-h-screen">
+        
+        <!-- SIDEBAR -->
+        <aside class="w-full md:w-64 glass md:h-screen sticky top-0 border-r border-white/5 flex flex-col z-50">
+            <div class="p-8 hidden md:flex items-center gap-3">
+                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                    <i data-lucide="zap" class="text-white w-5 h-5"></i>
+                </div>
+                <span class="font-bold text-xl tracking-tighter">FocusForge</span>
+            </div>
+
+            <nav class="flex-1 px-4 py-2 space-y-1">
+                <button onclick="switchView('dashboard')" class="nav-link w-full flex items-center gap-4 px-4 py-4 rounded-xl text-slate-400 active" data-view="dashboard">
+                    <i data-lucide="layout-grid" class="w-5 h-5"></i>
+                    <span class="font-bold">Dashboard</span>
+                </button>
+                <button onclick="switchView('habits')" class="nav-link w-full flex items-center gap-4 px-4 py-4 rounded-xl text-slate-400" data-view="habits">
+                    <i data-lucide="list-checks" class="w-5 h-5"></i>
+                    <span class="font-bold">My Habits</span>
+                </button>
+                <button onclick="switchView('analytics')" class="nav-link w-full flex items-center gap-4 px-4 py-4 rounded-xl text-slate-400" data-view="analytics">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                    <span class="font-bold">Analytics</span>
+                </button>
+                <button onclick="switchView('profile')" class="nav-link w-full flex items-center gap-4 px-4 py-4 rounded-xl text-slate-400" data-view="profile">
+                    <i data-lucide="user" class="w-5 h-5"></i>
+                    <span class="font-bold">Profile</span>
+                </button>
+            </nav>
+
+            <div class="p-4 border-t border-white/5">
+                <button onclick="logout()" class="w-full flex items-center gap-4 px-4 py-4 rounded-xl text-red-400 hover:bg-red-500/10 transition-all">
+                    <i data-lucide="log-out" class="w-5 h-5"></i>
+                    <span class="font-bold">Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1 p-4 md:p-10 lg:p-12 overflow-y-auto">
+            
+            <!-- DASHBOARD VIEW -->
+            <div id="view-dashboard" class="view-content animate-fade-in space-y-10">
+                <header class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <div>
+                        <h2 class="text-3xl md:text-5xl font-black tracking-tight">Focus, <span id="u-name" class="gradient-text">Striver</span></h2>
+                        <p id="q-text" class="text-slate-400 mt-2 text-lg font-medium italic">"Consistency beats motivation."</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="glass px-6 py-3 rounded-2xl flex items-center gap-3 border-orange-500/20">
+                            <i data-lucide="flame" class="text-orange-500 w-6 h-6 fill-orange-500"></i>
+                            <span id="s-streak" class="text-2xl font-black">0</span>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Progress Card -->
+                    <div class="glass p-8 rounded-[2.5rem] flex items-center justify-between col-span-1">
+                        <div>
+                            <h3 class="text-slate-500 text-xs font-black uppercase tracking-widest">Study Score</h3>
+                            <p class="text-4xl font-black mt-2"><span id="p-score">0</span>/100</p>
+                        </div>
+                        <div class="relative w-24 h-24">
+                            <svg class="w-full h-full">
+                                <circle class="text-slate-800" stroke-width="8" stroke="currentColor" fill="transparent" r="40" cx="48" cy="48" />
+                                <circle id="score-ring" class="text-indigo-500 progress-ring-circle" stroke-width="8" stroke-dasharray="251.32" stroke-dashoffset="251.32" stroke-linecap="round" stroke="currentColor" fill="transparent" r="40" cx="48" cy="48" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Level & XP -->
+                    <div class="glass p-8 rounded-[2.5rem] col-span-1 md:col-span-2 space-y-6">
+                        <div class="flex justify-between items-end">
+                            <div>
+                                <h3 class="text-slate-500 text-xs font-black uppercase tracking-widest">Global Ranking</h3>
+                                <p class="text-3xl font-black mt-1">Level <span id="u-level">1</span></p>
+                            </div>
+                            <span class="text-indigo-400 font-bold"><span id="u-xp">0</span> / 500 XP</span>
+                        </div>
+                        <div class="w-full h-4 bg-slate-900 rounded-full overflow-hidden border border-white/5">
+                            <div id="u-xp-bar" class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-1000" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    <!-- Habits Panel -->
+                    <div class="lg:col-span-8 space-y-6">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-2xl font-black tracking-tight">Daily Missions</h3>
+                            <div class="flex gap-2">
+                                <button onclick="openModal()" class="btn-premium px-6 py-3 rounded-xl font-bold flex items-center gap-2">
+                                    <i data-lucide="plus" class="w-5 h-5"></i> Add Habit
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="exam-countdown" class="hidden glass p-6 rounded-2xl border-indigo-500/20 bg-indigo-500/5 items-center gap-4">
+                            <i data-lucide="calendar" class="text-indigo-400 w-8 h-8"></i>
+                            <div>
+                                <p class="text-xs font-bold text-indigo-300 uppercase">Exam Countdown</p>
+                                <p class="text-xl font-black" id="countdown-timer">-- days remaining</p>
+                            </div>
+                        </div>
+
+                        <div id="habit-suggestion-box" class="hidden glass p-6 rounded-2xl border-purple-500/20 space-y-4">
+                            <p class="text-sm font-bold text-purple-400 flex items-center gap-2">
+                                <i data-lucide="sparkles" class="w-4 h-4"></i> Smart Suggestion
+                            </p>
+                            <div class="flex flex-wrap gap-2" id="suggestion-list"></div>
+                        </div>
+
+                        <div id="habit-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Cards will be injected here -->
+                        </div>
+                    </div>
+
+                    <!-- Pomodoro Panel -->
+                    <div class="lg:col-span-4">
+                        <div class="glass p-10 rounded-[3rem] text-center space-y-8 sticky top-12">
+                            <h3 class="text-sm font-black uppercase tracking-[0.3em] text-slate-500" id="timer-status">Focus Session</h3>
+                            <div class="relative w-56 h-56 mx-auto">
+                                <svg class="w-full h-full">
+                                    <circle cx="112" cy="112" r="105" stroke="currentColor" stroke-width="8" fill="transparent" class="text-slate-800" />
+                                    <circle id="timer-ring" cx="112" cy="112" r="105" stroke="#6366f1" stroke-width="8" fill="transparent" stroke-dasharray="659.7" stroke-dashoffset="659.7" stroke-linecap="round" class="timer-ring" />
+                                </svg>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <span id="t-display" class="text-6xl font-black tracking-tighter tabular-nums">25:00</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-center gap-4">
+                                <button id="t-toggle" onclick="toggleTimer()" class="w-16 h-16 rounded-full btn-premium flex items-center justify-center">
+                                    <i data-lucide="play" class="w-8 h-8 fill-white"></i>
+                                </button>
+                                <button onclick="resetTimer()" class="w-16 h-16 rounded-full glass flex items-center justify-center hover:bg-white/10 transition-colors">
+                                    <i data-lucide="rotate-ccw" class="w-6 h-6 text-slate-400"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div >
+
+            <!-- ANALYTICS VIEW -->
+            <div id="view-analytics" class="view-content hidden animate-fade-in space-y-10">
+                <h2 class="text-4xl font-black">Performance</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="glass p-8 rounded-[2.5rem]">
+                        <h3 class="font-bold text-slate-400 mb-6">Weekly Habit Success</h3>
+                        <canvas id="weeklyChart"></canvas>
+                    </div>
+                    <div class="glass p-8 rounded-[2.5rem]">
+                        <h3 class="font-bold text-slate-400 mb-6">XP Growth Trend</h3>
+                        <canvas id="xpChart"></canvas>
+                    </div>
+                    <div class="glass p-8 rounded-[2.5rem]">
+                        <h3 class="font-bold text-slate-400 mb-6">Daily Study Minutes</h3>
+                        <canvas id="studyChart"></canvas>
+                    </div>
+                    <div class="glass p-8 rounded-[2.5rem]">
+                        <h3 class="font-bold text-slate-400 mb-6">Productivity Insights</h3>
+                        <div class="space-y-4" id="insight-box">
+                            <!-- Insights Injected -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REWARDS/PROFILE VIEW -->
+            <div id="view-profile" class="view-content hidden animate-fade-in max-w-4xl mx-auto space-y-8">
+                <div class="glass p-12 rounded-[3.5rem] text-center space-y-8">
+                    <div class="w-32 h-32 rounded-[2.5rem] bg-gradient-to-tr from-indigo-500 to-purple-500 mx-auto flex items-center justify-center text-5xl font-black text-white shadow-2xl" id="u-initial">S</div>
+                    <div>
+                        <h2 class="text-4xl font-black" id="p-full-name">Student</h2>
+                        <p class="text-slate-500 font-medium text-lg mt-1" id="p-full-email"></p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8 border-t border-white/5">
+                        <div class="text-center">
+                            <p class="text-xs font-black text-slate-500 uppercase">Current Level</p>
+                            <p class="text-3xl font-black mt-2 text-indigo-400" id="prof-level">1</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs font-black text-slate-500 uppercase">Total XP</p>
+                            <p class="text-3xl font-black mt-2 text-purple-400" id="prof-xp">0</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs font-black text-slate-500 uppercase">Daily Streak</p>
+                            <p class="text-3xl font-black mt-2 text-orange-500" id="prof-streak">0</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs font-black text-slate-500 uppercase">High Score</p>
+                            <p class="text-3xl font-black mt-2 text-green-500" id="prof-score">0</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <h4 class="text-xl font-black text-slate-400">Unlocked Badges</h4>
+                        <div id="badge-grid" class="flex flex-wrap justify-center gap-6">
+                            <!-- Badges injected here -->
+                        </div>
+                    </div>
+
+                    <div class="pt-8 border-t border-white/5">
+                        <h4 class="text-xl font-black text-slate-400 mb-4">Exam Configuration</h4>
+                        <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
+                            <input type="date" id="exam-date-input" class="bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 outline-none focus:border-indigo-500">
+                            <button onclick="saveExamDate()" class="btn-premium px-8 py-3 rounded-xl font-bold">Set Exam Date</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- HABIT MODAL -->
+    <div id="habit-modal" class="fixed inset-0 z-[110] bg-slate-950/90 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass w-full max-w-md p-10 rounded-[3rem] space-y-8 animate-fade-in">
+            <h3 class="text-3xl font-black tracking-tight" id="modal-title">Forge Mission</h3>
+            <div class="space-y-6">
+                <div>
+                    <label class="text-xs font-black text-slate-500 uppercase ml-2">Mission Name</label>
+                    <input type="text" id="m-name" placeholder="e.g. Physics Numericals" class="w-full bg-slate-900 border border-slate-800 rounded-2xl px-5 py-4 mt-2 outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs font-black text-slate-500 uppercase ml-2">Category</label>
+                        <select id="m-category" class="w-full bg-slate-900 border border-slate-800 rounded-2xl px-5 py-4 mt-2 outline-none">
+                            <option value="Revision">Revision</option>
+                            <option value="Practice">Practice</option>
+                            <option value="Mindset">Mindset</option>
+                            <option value="Health">Health</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-black text-slate-500 uppercase ml-2">Difficulty</label>
+                        <select id="m-difficulty" class="w-full bg-slate-900 border border-slate-800 rounded-2xl px-5 py-4 mt-2 outline-none">
+                            <option value="easy">Easy (10 XP)</option>
+                            <option value="medium">Medium (25 XP)</option>
+                            <option value="hard">Hard (50 XP)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs font-black text-slate-500 uppercase ml-2">Est. Time (Min)</label>
+                        <input type="number" id="m-time" placeholder="30" class="w-full bg-slate-900 border border-slate-800 rounded-2xl px-5 py-4 mt-2 outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs font-black text-slate-500 uppercase ml-2">Reminder</label>
+                        <input type="time" id="m-reminder" class="w-full bg-slate-900 border border-slate-800 rounded-2xl px-5 py-4 mt-2 outline-none">
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-4">
+                <button onclick="closeModal()" class="flex-1 py-4 font-bold text-slate-500">Cancel</button>
+                <button onclick="saveHabit()" class="flex-1 btn-premium py-4 rounded-2xl font-bold" id="save-btn">Forge</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- APP STATE ---
+        let state = {
+            currentUser: null,
+            users: JSON.parse(localStorage.getItem('ff_users')) || [],
+            habits: [],
+            xp: 0,
+            level: 1,
+            streak: 0,
+            lastLoginDate: null,
+            examDate: null,
+            studyHistory: {} // Date -> Minutes
+        };
+
+        const quotes = [
+            "Small habits today create extraordinary results tomorrow.",
+            "Consistency beats motivation.",
+            "Discipline today creates freedom tomorrow.",
+            "Excellence is not an act, but a habit.",
+            "Focus on progress, not perfection."
+        ];
+
+        const suggestionPool = [
+            "Revision session", "Practice questions", "Mock test", 
+            "Concept review", "Flashcards study", "Previous year questions"
+        ];
+
+        // --- AUTH LOGIC ---
+        function toggleAuth(isReg) {
+            document.getElementById('login-form').classList.toggle('hidden', isReg);
+            document.getElementById('register-form').classList.toggle('hidden', !isReg);
+            document.getElementById('auth-error').classList.add('hidden');
+        }
+
+        function handleRegister() {
+            const name = document.getElementById('r-name').value;
+            const email = document.getElementById('r-email').value;
+            const password = document.getElementById('r-password').value;
+
+            if(!name || !email || !password) return showError("Please fill all fields");
+            if(state.users.find(u => u.email === email)) return showError("Email already exists");
+
+            const newUser = { name, email, password, xp: 0, streak: 0, habits: [], lastDate: null, studyHistory: {}, examDate: null };
+            state.users.push(newUser);
+            localStorage.setItem('ff_users', JSON.stringify(state.users));
+            toggleAuth(false);
+            showError("Account created! Please login.", true);
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('l-email').value;
+            const password = document.getElementById('l-password').value;
+            const user = state.users.find(u => u.email === email && u.password === password);
+
+            if(user) {
+                state.currentUser = user;
+                localStorage.setItem('ff_session', email);
+                initApp();
+            } else {
+                showError("Invalid email or password");
+            }
+        }
+
+        function showError(msg, isSuccess = false) {
+            const err = document.getElementById('auth-error');
+            err.innerText = msg;
+            err.className = isSuccess ? "text-green-400 text-center text-sm mt-4 block" : "text-red-400 text-center text-sm mt-4 block";
+            err.classList.remove('hidden');
+        }
+
+        function logout() {
+            saveUserData();
+            localStorage.removeItem('ff_session');
+            location.reload();
+        }
+
+        // --- APP ENGINE ---
+        function initApp() {
+            document.getElementById('auth-container').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+            
+            const user = state.currentUser;
+            document.getElementById('u-name').innerText = user.name.split(' ')[0];
+            document.getElementById('p-full-name').innerText = user.name;
+            document.getElementById('p-full-email').innerText = user.email;
+            document.getElementById('u-initial').innerText = user.name.charAt(0);
+            document.getElementById('q-text').innerText = quotes[Math.floor(Math.random() * quotes.length)];
+            
+            updateLevelUI();
+            checkStreak();
+            updateExamCountdown();
+            renderHabits();
+            updateStudyScore();
+            lucide.createIcons();
+        }
+
+        function saveUserData() {
+            if(!state.currentUser) return;
+            const email = state.currentUser.email;
+            const idx = state.users.findIndex(u => u.email === email);
+            state.users[idx] = state.currentUser;
+            localStorage.setItem('ff_users', JSON.stringify(state.users));
+        }
+
+        function switchView(view) {
+            document.querySelectorAll('.view-content').forEach(v => v.classList.add('hidden'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById(`view-${view}`).classList.remove('hidden');
+            document.querySelector(`[data-view="${view}"]`).classList.add('active');
+            
+            if(view === 'analytics') initCharts();
+        }
+
+        // --- HABIT LOGIC ---
+        let editingHabitId = null;
+
+        function openModal(id = null) {
+            editingHabitId = id;
+            if(id) {
+                const h = state.currentUser.habits.find(x => x.id === id);
+                document.getElementById('m-name').value = h.name;
+                document.getElementById('m-category').value = h.category;
+                document.getElementById('m-difficulty').value = h.difficulty;
+                document.getElementById('m-time').value = h.time;
+                document.getElementById('m-reminder').value = h.reminder;
+                document.getElementById('modal-title').innerText = "Edit Mission";
+                document.getElementById('save-btn').innerText = "Update";
+            } else {
+                document.getElementById('m-name').value = "";
+                document.getElementById('modal-title').innerText = "Forge Mission";
+                document.getElementById('save-btn').innerText = "Forge";
+            }
+            document.getElementById('habit-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('habit-modal').classList.add('hidden');
+        }
+
+        function saveHabit() {
+            const name = document.getElementById('m-name').value;
+            const category = document.getElementById('m-category').value;
+            const difficulty = document.getElementById('m-difficulty').value;
+            const time = document.getElementById('m-time').value;
+            const reminder = document.getElementById('m-reminder').value;
+
+            if(!name) return;
+
+            if(editingHabitId) {
+                const h = state.currentUser.habits.find(x => x.id === editingHabitId);
+                Object.assign(h, { name, category, difficulty, time, reminder });
+            } else {
+                state.currentUser.habits.push({
+                    id: Date.now(),
+                    name, category, difficulty, time, reminder,
+                    completed: false,
+                    lastCompletedDate: null
+                });
+            }
+            
+            closeModal();
+            renderHabits();
+            updateStudyScore();
+            saveUserData();
+        }
+
+        function toggleHabit(id) {
+            const h = state.currentUser.habits.find(x => x.id === id);
+            const today = new Date().toDateString();
+            
+            if(h.lastCompletedDate === today) {
+                h.completed = false;
+                h.lastCompletedDate = null;
+                addXP(getDifficultyXP(h.difficulty) * -1);
+            } else {
+                h.completed = true;
+                h.lastCompletedDate = today;
+                addXP(getDifficultyXP(h.difficulty));
+            }
+            
+            renderHabits();
+            updateStudyScore();
+            saveUserData();
+        }
+
+        function deleteHabit(id) {
+            state.currentUser.habits = state.currentUser.habits.filter(x => x.id !== id);
+            renderHabits();
+            updateStudyScore();
+            saveUserData();
+        }
+
+        function getDifficultyXP(diff) {
+            const map = { easy: 10, medium: 25, hard: 50 };
+            return map[diff] || 10;
+        }
+
+        function addXP(val) {
+            state.currentUser.xp += val;
+            if(state.currentUser.xp < 0) state.currentUser.xp = 0;
+            updateLevelUI();
+        }
+
+        function updateLevelUI() {
+            const xp = state.currentUser.xp;
+            const level = Math.floor(xp / 500) + 1;
+            const currentLevelXP = xp % 500;
+            const pct = (currentLevelXP / 500) * 100;
+
+            document.getElementById('u-level').innerText = level;
+            document.getElementById('prof-level').innerText = level;
+            document.getElementById('u-xp').innerText = currentLevelXP;
+            document.getElementById('prof-xp').innerText = xp;
+            document.getElementById('u-xp-bar').style.width = `${pct}%`;
+
+            renderBadges();
+        }
+
+        function checkStreak() {
+            const today = new Date().toDateString();
+            const last = state.currentUser.lastDate;
+
+            if(last === today) return;
+
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+
+            if(last === yesterday.toDateString()) {
+                // Streak maintained logic (triggered on full day completion)
+            } else {
+                // state.currentUser.streak = 0; // Simplified for this demo
+            }
+            
+            document.getElementById('s-streak').innerText = state.currentUser.streak;
+            document.getElementById('prof-streak').innerText = state.currentUser.streak;
+        }
+
+        // --- RENDER FUNCTIONS ---
+        function renderHabits() {
+            const list = document.getElementById('habit-list');
+            const habits = state.currentUser.habits;
+            const today = new Date().toDateString();
+
+            if(habits.length === 0) {
+                list.innerHTML = `<div class="col-span-full py-12 text-center text-slate-500 border-2 border-dashed border-slate-800 rounded-[2rem]">No habits forged yet. Use Suggestions or Add Habit.</div>`;
+                document.getElementById('habit-suggestion-box').classList.remove('hidden');
+                renderSuggestions();
+            } else {
+                document.getElementById('habit-suggestion-box').classList.add('hidden');
+                list.innerHTML = habits.map(h => {
+                    const isDone = h.lastCompletedDate === today;
+                    return `
+                    <div class="glass-card p-6 rounded-3xl flex items-center justify-between group">
+                        <div class="flex items-center gap-5">
+                            <button onclick="toggleHabit(${h.id})" class="w-10 h-10 rounded-xl border-2 flex items-center justify-center transition-all ${isDone ? 'bg-indigo-600 border-indigo-600' : 'border-slate-700'}">
+                                ${isDone ? '<i data-lucide="check" class="text-white w-6 h-6"></i>' : ''}
+                            </button>
+                            <div>
+                                <h4 class="font-extrabold text-lg ${isDone ? 'text-slate-500 line-through' : 'text-slate-100'}">${h.name}</h4>
+                                <div class="flex gap-3 mt-1">
+                                    <span class="text-[10px] font-black uppercase tracking-widest text-indigo-400">${h.category}</span>
+                                    <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">+${getDifficultyXP(h.difficulty)} XP</span>
+                                    ${h.time ? `<span class="text-[10px] font-black uppercase tracking-widest text-slate-500">${h.time}m</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onclick="openModal(${h.id})" class="p-2 text-slate-500 hover:text-white"><i data-lucide="edit-3" class="w-5 h-5"></i></button>
+                            <button onclick="deleteHabit(${h.id})" class="p-2 text-slate-500 hover:text-red-400"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                        </div>
+                    </div>
+                `}).join('');
+            }
+            lucide.createIcons();
+        }
+
+        function renderSuggestions() {
+            const list = document.getElementById('suggestion-list');
+            list.innerHTML = suggestionPool.map(s => `
+                <button onclick="quickAddHabit('${s}')" class="px-4 py-2 glass rounded-xl text-xs font-bold hover:bg-white/10 transition-all">+ ${s}</button>
+            `).join('');
+        }
+
+        function quickAddHabit(name) {
+            state.currentUser.habits.push({
+                id: Date.now(),
+                name, category: 'Exam Prep', difficulty: 'medium', time: 30, reminder: null,
+                completed: false, lastCompletedDate: null
+            });
+            renderHabits();
+            saveUserData();
+        }
+
+        function updateStudyScore() {
+            const habits = state.currentUser.habits;
+            if(habits.length === 0) return setScore(0);
+            
+            const today = new Date().toDateString();
+            const completed = habits.filter(h => h.lastCompletedDate === today).length;
+            const score = Math.round((completed / habits.length) * 100);
+            setScore(score);
+            
+            if(score === 100 && state.currentUser.lastDate !== today) {
+                state.currentUser.streak++;
+                state.currentUser.lastDate = today;
+                checkStreak();
+            }
+        }
+
+        function setScore(val) {
+            document.getElementById('p-score').innerText = val;
+            const ring = document.getElementById('score-ring');
+            const circumference = 251.32;
+            const offset = circumference - (val / 100) * circumference;
+            ring.style.strokeDashoffset = offset;
+        }
+
+        // --- POMODORO ---
+        let timerSeconds = 1500;
+        let isTimerRunning = false;
+        let timerInterval;
+        let isBreak = false;
+
+        function toggleTimer() {
+            const btn = document.getElementById('t-toggle');
+            if(isTimerRunning) {
+                clearInterval(timerInterval);
+                btn.innerHTML = '<i data-lucide="play" class="w-8 h-8 fill-white"></i>';
+            } else {
+                timerInterval = setInterval(runTimer, 1000);
+                btn.innerHTML = '<i data-lucide="pause" class="w-8 h-8 fill-white"></i>';
+            }
+            isTimerRunning = !isTimerRunning;
+            lucide.createIcons();
+        }
+
+        function runTimer() {
+            timerSeconds--;
+            updateTimerDisplay();
+            if(timerSeconds <= 0) {
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                if(!isBreak) {
+                    addXP(50);
+                    alert("Focus complete! 50 XP gained. Take a break.");
+                    timerSeconds = 300; // 5 min
+                    isBreak = true;
+                    document.getElementById('timer-status').innerText = "Short Break";
+                } else {
+                    alert("Break over! Back to focus.");
+                    timerSeconds = 1500;
+                    isBreak = false;
+                    document.getElementById('timer-status').innerText = "Focus Session";
+                }
+                toggleTimer();
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            timerSeconds = isBreak ? 300 : 1500;
+            updateTimerDisplay();
+            document.getElementById('t-toggle').innerHTML = '<i data-lucide="play" class="w-8 h-8 fill-white"></i>';
+            lucide.createIcons();
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timerSeconds / 60);
+            const s = timerSeconds % 60;
+            document.getElementById('t-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            
+            const total = isBreak ? 300 : 1500;
+            const ring = document.getElementById('timer-ring');
+            const circumference = 659.7;
+            const offset = circumference - (timerSeconds / total) * circumference;
+            ring.style.strokeDashoffset = offset;
+        }
+
+        // --- EXAM COUNTDOWN ---
+        function saveExamDate() {
+            const date = document.getElementById('exam-date-input').value;
+            if(!date) return;
+            state.currentUser.examDate = date;
+            updateExamCountdown();
+            saveUserData();
+        }
+
+        function updateExamCountdown() {
+            if(!state.currentUser.examDate) return;
+            const target = new Date(state.currentUser.examDate);
+            const diff = target - new Date();
+            const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+            
+            const el = document.getElementById('exam-countdown');
+            if(days >= 0) {
+                el.classList.replace('hidden', 'flex');
+                document.getElementById('countdown-timer').innerText = `${days} Days Remaining`;
+            } else {
+                el.classList.add('hidden');
+            }
+        }
+
+        // --- BADGES ---
+        function renderBadges() {
+            const lvl = Math.floor(state.currentUser.xp / 500) + 1;
+            const badges = [
+                { lvl: 2, icon: 'shield-check', name: 'Consistency' },
+                { lvl: 5, icon: 'zap', name: 'Focus Master' },
+                { lvl: 10, icon: 'sword', name: 'Exam Warrior' },
+                { lvl: 20, icon: 'crown', name: 'Discipline King' }
+            ];
+
+            const grid = document.getElementById('badge-grid');
+            grid.innerHTML = badges.map(b => `
+                <div class="glass-card p-6 rounded-3xl w-32 flex flex-col items-center gap-3 ${lvl >= b.lvl ? 'opacity-100' : 'opacity-20 grayscale'}">
+                    <i data-lucide="${b.icon}" class="w-10 h-10 ${lvl >= b.lvl ? 'text-indigo-400' : 'text-slate-600'}"></i>
+                    <p class="text-[10px] font-black uppercase tracking-widest">${b.name}</p>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // --- ANALYTICS CHARTS ---
+        function initCharts() {
+            const ctx1 = document.getElementById('weeklyChart').getContext('2d');
+            const ctx2 = document.getElementById('xpChart').getContext('2d');
+            const ctx3 = document.getElementById('studyChart').getContext('2d');
+
+            // Dummy Data for demo
+            new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Completion Rate %',
+                        data: [65, 59, 80, 81, 56, 95, 100],
+                        borderColor: '#6366f1',
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)'
+                    }]
+                },
+                options: { plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false } } } }
+            });
+
+            new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['W1', 'W2', 'W3', 'W4'],
+                    datasets: [{
+                        label: 'XP Gained',
+                        data: [1200, 1900, 1500, 2500],
+                        backgroundColor: '#a855f7',
+                        borderRadius: 8
+                    }]
+                },
+                options: { plugins: { legend: { display: false } } }
+            });
+
+            new Chart(ctx3, {
+                type: 'line',
+                data: {
+                    labels: ['1', '2', '3', '4', '5', '6', '7'],
+                    datasets: [{
+                        label: 'Focus Minutes',
+                        data: [45, 120, 60, 150, 90, 200, 180],
+                        borderColor: '#10b981',
+                        tension: 0.4
+                    }]
+                },
+                options: { plugins: { legend: { display: false } } }
+            });
+
+            document.getElementById('insight-box').innerHTML = `
+                <div class="p-4 glass rounded-2xl border-l-4 border-indigo-500">
+                    <p class="text-sm font-bold">Productivity improved by 15% this week.</p>
+                </div>
+                <div class="p-4 glass rounded-2xl border-l-4 border-emerald-500">
+                    <p class="text-sm font-bold">You study most effectively in the evening.</p>
+                </div>
+            `;
+        }
+
+        // --- INITIAL CHECK ---
+        window.onload = () => {
+            const session = localStorage.getItem('ff_session');
+            if(session) {
+                const user = state.users.find(u => u.email === session);
+                if(user) {
+                    state.currentUser = user;
+                    initApp();
+                } else {
+                    localStorage.removeItem('ff_session');
+                }
+            }
+            lucide.createIcons();
+        };
+    </script>
+    <footer style="text-align:center;padding:20px;color:#9ca3af;font-size:14px;">
+Built with ❤️ by Rishu Kumar
+</footer>
+</body>
+</html>
